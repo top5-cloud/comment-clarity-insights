@@ -34,7 +34,7 @@ const WaitlistForm = ({
 
     try {
       // Replace with your Google Form's formResponse URL and field name
-      const googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSftC0qdTQxgQZwSQvWGIzCl-igECir7vRB_80VxUsmU9yVQ9A/viewform";
+      const googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSftC0qdTQxgQZwSQvWGIzCl-igECir7vRB_80VxUsmU9yVQ9A/formResponse";
       const formData = new FormData();
       formData.append("entry.268758907", email); // Replace YOUR_FIELD_ID with the actual field ID
 
