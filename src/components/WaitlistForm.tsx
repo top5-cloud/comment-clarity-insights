@@ -34,9 +34,9 @@ const WaitlistForm = ({
 
     try {
       // Replace with your Google Form's formResponse URL and field name
-      const googleFormUrl = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
+      const googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSftC0qdTQxgQZwSQvWGIzCl-igECir7vRB_80VxUsmU9yVQ9A/viewform?usp=dialog";
       const formData = new FormData();
-      formData.append("entry.YOUR_FIELD_ID", email); // Replace YOUR_FIELD_ID with the actual field ID
+      formData.append("entry.mG61Hd", email); // Replace YOUR_FIELD_ID with the actual field ID
 
       // Submit the form data
       await fetch(googleFormUrl, {
