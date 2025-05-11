@@ -33,17 +33,18 @@ const WaitlistForm = ({
     setIsLoading(true);
 
     try {
-      // Replace with your Google Form's formResponse URL and field name
+      // Replace with your Google Form's formResponse URL and field ID
       const googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSftC0qdTQxgQZwSQvWGIzCl-igECir7vRB_80VxUsmU9yVQ9A/formResponse";
       const formData = new FormData();
-      formData.append("entry.268758907", email); // Replace YOUR_FIELD_ID with the actual field ID
+      formData.append("entry.268758907", email); // Replace with your field ID
 
-      // Submit the form data
+      console.log("Submitting email:", email);
       await fetch(googleFormUrl, {
         method: "POST",
-        mode: "no-cors", // Google Forms requires no-cors mode
+        mode: "no-cors", // Required for Google Forms
         body: formData,
       });
+      console.log("Submission completed");
 
       toast({
         title: "Success!",
