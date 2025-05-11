@@ -1,9 +1,7 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { Save } from "lucide-react";
 
 interface WaitlistFormProps {
   variant?: "primary" | "light";
@@ -16,20 +14,11 @@ const WaitlistForm = ({
 }: WaitlistFormProps) => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [savedEmails, setSavedEmails] = useState<string[]>([]);
   const { toast } = useToast();
-  
-  // Load saved emails from localStorage on component mount
-  useEffect(() => {
-    const storedEmails = localStorage.getItem("waitlistEmails");
-    if (storedEmails) {
-      setSavedEmails(JSON.parse(storedEmails));
-    }
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -40,76 +29,38 @@ const WaitlistForm = ({
       });
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
-      // Add email to the saved list if it's not already there
-      if (!savedEmails.includes(email)) {
-        const updatedEmails = [...savedEmails, email];
-        setSavedEmails(updatedEmails);
-        
-        // Store in localStorage for persistence
-        localStorage.setItem("waitlistEmails", JSON.stringify(updatedEmails));
-        
-        toast({
-          title: "Success!",
-          description: "You've been added to the waitlist.",
-        });
-      } else {
-        toast({
-          title: "Already Subscribed",
-          description: "This email is already on the waitlist.",
-        });
-      }
-      
+      // Replace with your Google Form's formResponse URL and field name
+      const googleFormUrl = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
+      const formData = new FormData();
+      formData.append("entry.YOUR_FIELD_ID", email); // Replace YOUR_FIELD_ID with the actual field ID
+
+      // Submit the form data
+      await fetch(googleFormUrl, {
+        method: "POST",
+        mode: "no-cors", // Google Forms requires no-cors mode
+        body: formData,
+      });
+
+      toast({
+        title: "Success!",
+        description: "Your email has been submitted to the waitlist.",
+      });
+
       setEmail("");
     } catch (error) {
-      console.error("Error saving email:", error);
+      console.error("Error submitting to Google Form:", error);
       toast({
         title: "Error",
-        description: "Failed to save your email. Please try again.",
+        description: "Failed to submit your email. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
-  };
-  
-  const downloadEmailsAsFile = () => {
-    if (savedEmails.length === 0) {
-      toast({
-        title: "No Emails",
-        description: "There are no emails to download.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // Create content for the text file
-    const content = savedEmails.join("\n");
-    
-    // Create a blob with the content
-    const blob = new Blob([content], { type: "text/plain" });
-    
-    // Create a download link
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "waitlist-emails.txt";
-    
-    // Trigger download
-    document.body.appendChild(a);
-    a.click();
-    
-    // Cleanup
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    toast({
-      title: "Download Started",
-      description: `Downloaded ${savedEmails.length} email addresses.`,
-    });
   };
 
   return (
@@ -130,26 +81,9 @@ const WaitlistForm = ({
           disabled={isLoading}
           className={`${variant === "light" ? "bg-brand-purple hover:bg-brand-purple-dark text-white" : ""}`}
         >
-          {isLoading ? "Adding..." : buttonText}
+          {isLoading ? "Submitting..." : buttonText}
         </Button>
       </form>
-      
-      {savedEmails.length > 0 && (
-        <div className="mt-4 flex justify-between items-center">
-          <p className={`text-sm ${variant === "light" ? "text-white/90" : "text-gray-500"}`}>
-            {savedEmails.length} {savedEmails.length === 1 ? "email" : "emails"} collected
-          </p>
-          <Button
-            onClick={downloadEmailsAsFile}
-            variant="outline"
-            size="sm"
-            className={`${variant === "light" ? "bg-white/20 text-white border-white/30 hover:bg-white/30" : ""}`}
-          >
-            <Save className="mr-2 h-4 w-4" />
-            Download List
-          </Button>
-        </div>
-      )}
     </div>
   );
 };
