@@ -16,20 +16,49 @@ const WaitlistForm = ({
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  
+  // You need to replace this with your actual Google Form URL
+  // Format: https://docs.google.com/forms/d/e/{YOUR_FORM_ID}/formResponse
+  const googleFormUrl = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
+  
+  // Replace 'entry.123456789' with the actual entry ID from your Google Form
+  // You can find this by inspecting the form in your browser
+  const emailEntryId = "entry.123456789";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Creating a form data object
+      const formData = new FormData();
+      formData.append(emailEntryId, email);
+      
+      // Using no-cors mode since Google Forms doesn't support CORS
+      await fetch(googleFormUrl, {
+        method: "POST",
+        mode: "no-cors",
+        body: formData
+      });
+      
+      // Since we're using no-cors mode, we won't get a proper response
+      // So we just assume success
       toast({
         title: "Success!",
         description: "You've been added to the waitlist.",
       });
+      
       setEmail("");
+    } catch (error) {
+      console.error("Error submitting to Google Form:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit your email. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
